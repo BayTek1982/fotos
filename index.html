@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#05080d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Fotoarchiv">
+<title>Bayazit Fotoarchiv</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🖼️</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+<script>try{document.documentElement.dataset.thema=localStorage.getItem("kompass_thema")||"dunkel"}catch(e){}</script>
+<style>
+:root{--bg:var(--bg);--card:#0f1620;--card2:#0b1118;--line:#1b2532;--txt:#dfe6ef;--mut:#7f8b9c;
+ --grn:#1fcf8f;--red:#f0605d;--gold:#f5c542;--blue:#4c9aff;--lila:#b388ff;--orange:#ff9f43;--acc:var(--grn);
+ --mono:"JetBrains Mono",ui-monospace,Consolas,monospace;--sans:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:var(--sans);background:var(--bg);color:var(--txt);padding:18px 14px 40px;font-size:15.5px;line-height:1.5;
+ background-image:radial-gradient(900px 400px at 100% -10%,color-mix(in srgb,var(--acc) 9%,transparent),transparent 70%)}
+.wrap{max-width:1240px;margin:0 auto}
+a{color:var(--acc)}
+/* ---------- Kopf ---------- */
+header.kopf{margin-bottom:18px}
+.zurueck{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-weight:700;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);text-decoration:none;background:var(--card);border:1px solid var(--line);padding:7px 12px;border-radius:10px;margin-bottom:16px;transition:.2s}
+.zurueck:hover{color:var(--acc);border-color:var(--acc)}
+.meta{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);margin-bottom:4px}
+h1{font-family:var(--mono);font-weight:800;font-size:1.65rem;letter-spacing:.04em;text-transform:uppercase;color:var(--acc);text-shadow:0 0 24px color-mix(in srgb,var(--acc) 35%,transparent);line-height:1.15}
+h2{font-family:var(--mono);font-weight:700;font-size:.82rem;letter-spacing:.1em;text-transform:uppercase;color:var(--acc)}
+/* ---------- Navigation als Pillen ---------- */
+nav{display:flex;gap:8px;overflow-x:auto;margin:0 -14px 18px;padding:2px 14px 6px;scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+nav button{flex-shrink:0;background:var(--card);border:1px solid var(--line);color:var(--mut);padding:9px 14px;border-radius:12px;cursor:pointer;font-family:var(--mono);font-weight:700;font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;transition:.2s}
+nav button:hover{color:var(--txt)}
+nav button.an{color:var(--acc);border-color:var(--acc);background:color-mix(in srgb,var(--acc) 10%,var(--card));box-shadow:0 0 18px color-mix(in srgb,var(--acc) 18%,transparent)}
+/* ---------- Karten ---------- */
+.card{position:relative;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:14px;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:var(--acc);opacity:.85}
+.card h2{margin-bottom:14px}
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px}
+@media(min-width:700px){.kpis{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 14px 12px;position:relative;overflow:hidden}
+.kpi::after{content:"";position:absolute;width:90px;height:90px;right:-30px;top:-30px;border-radius:50%;background:var(--acc);opacity:.08;filter:blur(10px)}
+.kpi .l{font-family:var(--mono);font-size:.66rem;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.12em}
+.kpi .w{font-family:var(--mono);font-size:1.35rem;font-weight:800;margin-top:6px;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+/* ---------- Formulare ---------- */
+.form{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+label{display:flex;flex-direction:column;gap:6px;font-family:var(--mono);font-size:.66rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}
+input,select,textarea{background:var(--card2);border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:10px 11px;font-size:.95rem;font-family:var(--sans);letter-spacing:0;text-transform:none;font-weight:400;transition:.2s;min-width:0}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 18%,transparent)}
+input[type=checkbox]{accent-color:var(--acc);width:18px;height:18px}
+textarea{min-height:70px;grid-column:1/-1}
+.full{grid-column:1/-1}
+.btn{display:inline-flex;align-items:center;gap:6px;background:color-mix(in srgb,var(--acc) 14%,var(--card));color:var(--acc);border:1px solid color-mix(in srgb,var(--acc) 60%,transparent);padding:10px 16px;border-radius:12px;font-family:var(--mono);font-weight:700;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:.2s}
+.btn:hover{background:color-mix(in srgb,var(--acc) 22%,var(--card));box-shadow:0 0 18px color-mix(in srgb,var(--acc) 22%,transparent)}
+.btn:disabled{opacity:.4;cursor:default;box-shadow:none}
+.btn.grau{background:var(--card2);color:var(--txt);border-color:var(--line)}
+.btn.grau:hover{border-color:var(--mut);box-shadow:none}
+.btn.rot{background:color-mix(in srgb,var(--red) 12%,var(--card));color:var(--red);border-color:color-mix(in srgb,var(--red) 55%,transparent)}
+.reihe{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.calc{display:flex;gap:8px;flex-wrap:wrap;font-size:.85rem;color:var(--mut);padding:6px 0}
+.calc span{background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:6px 10px}
+.calc b{color:var(--txt);font-family:var(--mono)}
+/* ---------- Tabellen ---------- */
+table{width:100%;border-collapse:collapse;font-size:.88rem}
+th,td{padding:10px 8px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-family:var(--mono);color:var(--mut);font-weight:700;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer}
+td{font-variant-numeric:tabular-nums}
+tr.zeile{cursor:pointer;transition:.15s}tr.zeile:hover{background:var(--card2)}
+.scroll{overflow-x:auto}
+.up{color:var(--grn)}.down{color:var(--red)}
+.tag{display:inline-block;padding:3px 9px;border-radius:999px;font-family:var(--mono);font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;background:var(--card2);border:1px solid var(--line);color:var(--mut)}
+.tag.offen{color:var(--blue);border-color:color-mix(in srgb,var(--blue) 55%,transparent)}
+.tag.frei{color:var(--grn);border-color:color-mix(in srgb,var(--grn) 55%,transparent)}
+.tag.bald{color:var(--gold);border-color:color-mix(in srgb,var(--gold) 55%,transparent)}
+canvas{width:100%;height:240px;display:block}
+.filter{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.hinweis{font-size:.82rem;color:var(--mut);margin-top:10px;line-height:1.55}
+.hinweis b{color:var(--txt)}
+.leer{color:var(--mut);text-align:center;padding:26px;white-space:normal}
+.mini{font-size:.8rem;color:var(--mut)}
+.bild{max-width:100%;border-radius:12px;margin-top:8px}
+/* Infobox mit farbiger Überschrift */
+.info{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.info .k{font-family:var(--mono);font-size:.66rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--acc);margin-bottom:4px}
+/* Dialog */
+#dlg{position:fixed;inset:0;background:#000b;backdrop-filter:blur(4px);display:none;align-items:flex-end;justify-content:center;padding:14px;z-index:20}
+@media(min-width:700px){#dlg{align-items:center}}
+#dlg .card{max-width:640px;width:100%;max-height:88vh;overflow:auto;animation:hoch .3s ease}
+/* ---------- Animationen ---------- */
+@keyframes rein{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes hoch{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:none}}
+section:not([hidden])>*,.kpis>*,.anim>*{animation:rein .45s cubic-bezier(.2,.7,.2,1) both}
+section:not([hidden])>*:nth-child(2),.kpis>*:nth-child(2),.anim>*:nth-child(2){animation-delay:.05s}
+section:not([hidden])>*:nth-child(3),.kpis>*:nth-child(3),.anim>*:nth-child(3){animation-delay:.1s}
+section:not([hidden])>*:nth-child(4),.kpis>*:nth-child(4),.anim>*:nth-child(4){animation-delay:.15s}
+section:not([hidden])>*:nth-child(5),.kpis>*:nth-child(5),.anim>*:nth-child(5){animation-delay:.2s}
+section:not([hidden])>*:nth-child(n+6),.kpis>*:nth-child(n+6),.anim>*:nth-child(n+6){animation-delay:.25s}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+::selection{background:color-mix(in srgb,var(--acc) 35%,transparent)}
+
+/* ---------- Hell-Modus ---------- */
+html[data-thema=hell]{--bg:#f3f5f8;--card:#ffffff;--card2:#eef1f5;--line:#d7dde5;--txt:#111a26;--mut:#5d6878;
+ --grn:#0fa872;--red:#d9443f;--gold:#c99a0a;--blue:#2f7be0;--lila:#8a5ce6;--orange:#e7801c}
+html[data-thema=hell] body{background-image:radial-gradient(900px 400px at 100% -10%,color-mix(in srgb,var(--acc) 7%,transparent),transparent 70%)}
+html[data-thema=hell] .card,html[data-thema=hell] .kpi,html[data-thema=hell] .k{box-shadow:0 1px 3px #0000000d}
+html[data-thema=hell] h1{text-shadow:none}
+html,body{transition:background-color .3s,color .3s}
+header.kopf{position:relative}
+.thema{position:absolute;right:0;top:0;width:42px;height:38px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--txt);font-size:1.1rem;cursor:pointer;transition:.2s;z-index:3}
+.thema:hover{border-color:var(--acc);box-shadow:0 0 14px color-mix(in srgb,var(--acc) 25%,transparent)}
+
+.start{text-align:center;padding:30px 16px}
+.start .i{font-size:4rem}
+.grosser{font-size:1.1rem;padding:14px 22px}
+.leiste{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px;position:sticky;top:0;background:var(--bg)e6;backdrop-filter:blur(8px);padding:8px 0;z-index:5}
+.jahre{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:6px}
+.jahre button{background:var(--card);border:1px solid var(--line);color:var(--mut);padding:7px 12px;border-radius:999px;cursor:pointer;white-space:nowrap;font-family:var(--mono);font-weight:700;font-size:.72rem;letter-spacing:.05em}
+.jahre button.an{background:color-mix(in srgb,var(--acc) 14%,var(--card));color:var(--acc);border-color:var(--acc)}
+.monat h3{margin:22px 0 10px;font-family:var(--mono);font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--acc)}
+.raster{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:4px}
+@media(max-width:500px){.raster{grid-template-columns:repeat(3,1fr)}}
+.bild{position:relative;aspect-ratio:1;background:var(--card);border-radius:10px;overflow:hidden;cursor:pointer}
+.bild img,.bild video{width:100%;height:100%;object-fit:cover;display:block}
+.bild .vid{position:absolute;bottom:4px;right:6px;font-size:.8rem;background:#000a;padding:1px 6px;border-radius:6px}
+.bild .fav{position:absolute;top:4px;left:6px}
+.bild.auswahl{outline:3px solid var(--acc)}
+#lb{position:fixed;inset:0;background:#000;display:none;flex-direction:column;z-index:30}
+#lbMedia{flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;touch-action:pan-y}
+#lbMedia img,#lbMedia video{max-width:100%;max-height:100%;object-fit:contain}
+#lbOben,#lbUnten{display:flex;gap:8px;align-items:center;padding:10px;flex-wrap:wrap;background:var(--bg)cc}
+#lbOben{justify-content:space-between}
+.lbBtn{background:#ffffff22;border:none;color:#fff;padding:10px 14px;border-radius:10px;cursor:pointer;font-size:1rem}
+.pfeil{position:absolute;top:50%;transform:translateY(-50%);font-size:2rem;background:#0006;border:none;color:#fff;width:50px;height:70px;border-radius:10px;cursor:pointer}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{background:#ffffff22;border:none;color:#fff;padding:6px 12px;border-radius:20px;cursor:pointer;font-size:.85rem}
+.chip.an{background:color-mix(in srgb,var(--acc) 14%,var(--card));color:var(--acc);border-color:var(--acc);border:1px solid var(--acc)}
+.fortschritt{height:8px;background:var(--card2);border-radius:6px;overflow:hidden;margin:10px auto;max-width:400px}
+.fortschritt div{height:100%;background:var(--acc);width:0}
+.mini{font-size:.8rem;color:var(--mut)}
+.erinnerung{display:flex;gap:6px;overflow-x:auto}
+.erinnerung .bild{width:120px;flex-shrink:0}
+</style>
+</head>
+<body style="--acc:var(--red)">
+<div class="wrap">
+<header class="kopf"><button class="thema" id="themaBtn" title="Hell/Dunkel">☀️</button><a class="zurueck" href="https://kompassapps.de">‹ Zurück</a><div class="meta" id="meta">&nbsp;</div><h1>Fotoarchiv</h1></header>
+
+<section id="v-start"><div class="card start">
+ <div class="i">📂</div><h2 style="font-size:1.3rem;margin:10px 0">Familienbilder & Videos ansehen</h2>
+ <p class="hinweis" style="max-width:520px;margin:0 auto 18px">Wähle den Ordner mit euren Bildern – z. B. die Festplatte am Heimserver oder eine USB-Platte. Die App sortiert alles nach Jahr und Monat. <b>Die Bilder bleiben auf deiner Platte</b> und werden nirgends hochgeladen.</p>
+ <div class="reihe" style="justify-content:center"><button class="btn grosser" id="ordnerBtn">📂 Ordner wählen</button><button class="btn grau grosser" id="wiederBtn" hidden>🔄 Letzten Ordner öffnen</button></div>
+ <input type="file" id="ordnerInput" webkitdirectory directory multiple hidden>
+ <div id="ladeInfo" style="margin-top:18px" hidden><div class="fortschritt"><div id="ladeBalken"></div></div><div class="mini" id="ladeText"></div></div>
+ <p class="hinweis" style="margin-top:18px">Am besten am PC mit Chrome oder Edge. Tipp: Mehrere Platten? Einfach nacheinander öffnen – Personen und Favoriten bleiben gespeichert.</p>
+</div></section>
+
+<section id="v-archiv" hidden>
+ <div class="kpis" id="kpis"></div>
+ <div class="card" id="erinnerungBox" hidden><h2>📅 Heute vor … Jahren</h2><div class="erinnerung" id="erinnerung"></div></div>
+ <div class="leiste">
+  <select id="fArt"><option value="alle">Fotos & Videos</option><option value="foto">Nur Fotos</option><option value="video">Nur Videos</option></select>
+  <select id="fPerson"><option value="">Alle Personen</option></select>
+  <select id="fOrdner"><option value="">Alle Ordner</option></select>
+  <label style="flex-direction:row;align-items:center;gap:6px;color:var(--txt)"><input type="checkbox" id="fFav"> ⭐ Favoriten</label>
+  <input id="fSuche" placeholder="🔍 Dateiname / Ordner" style="flex:1;min-width:150px">
+  <button class="btn grau" id="andererOrdner">📂 Anderer Ordner</button>
+  <button class="btn grau" id="dupBtn">🧬 Doppelte finden</button>
+ </div>
+ <div class="jahre" id="jahre"></div>
+ <div id="inhalt"></div>
+ <div style="text-align:center;margin:20px"><button class="btn grau" id="mehr" hidden>Mehr laden</button></div>
+ <div class="card" style="margin-top:20px"><h2>👪 Personen</h2><div class="reihe"><input id="neuPerson" placeholder="Name, z. B. Isajah"><button class="btn grau" id="personPlus">➕</button></div><div class="chips" id="personenListe" style="margin-top:10px"></div>
+ <p class="hinweis">Personen markierst du in der großen Ansicht. Danach kannst du oben nach Person filtern.</p></div>
+ <div id="sich"></div>
+</section>
+</div>
+
+<div id="lb">
+ <div id="lbOben"><span id="lbInfo" style="color:#fff;font-size:.9rem"></span><div class="reihe"><button class="lbBtn" id="lbFav">☆</button><button class="lbBtn" id="lbZu">✖</button></div></div>
+ <div id="lbMedia" style="position:relative"></div>
+ <button class="pfeil" id="lbL" style="left:8px">‹</button><button class="pfeil" id="lbR" style="right:8px">›</button>
+ <div id="lbUnten"><span style="color:#fff;font-size:.85rem">👪 Wer ist drauf?</span><div class="chips" id="lbPersonen"></div></div>
+</div>
+
+<script>/* gemeinsame Helfer */
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const DB={db:null,name:"app",
+ async open(n){this.name=n;return new Promise(r=>{try{const q=indexedDB.open(n,1);q.onupgradeneeded=()=>q.result.createObjectStore("kv");q.onsuccess=()=>{this.db=q.result;r()};q.onerror=()=>r()}catch(e){r()}})},
+ async get(k){if(!this.db){try{return JSON.parse(localStorage.getItem(this.name+"_"+k))}catch(e){return null}}
+  return new Promise(r=>{const q=this.db.transaction("kv").objectStore("kv").get(k);q.onsuccess=()=>r(q.result??null);q.onerror=()=>r(null)})},
+ async set(k,v){if(!this.db){try{localStorage.setItem(this.name+"_"+k,JSON.stringify(v))}catch(e){}return}
+  return new Promise(r=>{const t=this.db.transaction("kv","readwrite");t.objectStore("kv").put(v,k);t.oncomplete=r;t.onerror=r})}
+};
+const eur=(v,d=2)=>v==null||isNaN(v)?"–":(+v).toLocaleString("de-DE",{minimumFractionDigits:d,maximumFractionDigits:d})+" €";
+const zahl=(v,d=0)=>v==null||isNaN(v)?"–":(+v).toLocaleString("de-DE",{minimumFractionDigits:d,maximumFractionDigits:d});
+const fdat=s=>s?new Date(s+"T12:00").toLocaleDateString("de-DE"):"–";
+const heute=()=>{const d=new Date();return new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)};
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const tageZw=(a,b)=>Math.round((new Date(b+"T12:00")-new Date(a+"T12:00"))/864e5);
+function datei(name,inhalt,typ,info){try{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([inhalt],{type:typ}));a.download=name;document.body.appendChild(a);a.click();a.remove();info&&(info.textContent="✅ Datei heruntergeladen.")}catch(e){info&&(info.textContent="Herunterladen ging nicht – nutze „Als Text kopieren“.")}}
+async function kopiere(t,info){try{await navigator.clipboard.writeText(t);info&&(info.textContent="✅ Kopiert.")}catch(e){info&&(info.textContent="Kopieren nicht möglich.")}}
+function zweimal(btn,text){if(btn.dataset.ok!=="1"){btn.dataset.ok="1";btn.dataset.alt=btn.textContent;btn.textContent=text||"Wirklich? Nochmal tippen";setTimeout(()=>{if(btn.dataset.ok==="1"){btn.dataset.ok="";btn.textContent=btn.dataset.alt}},4000);return false}btn.dataset.ok="";btn.textContent=btn.dataset.alt;return true}
+/* Sicherungs-Bereich: el = Container, getData()/setData(obj) */
+function sicherung(el,app,getData,setData){
+ el.innerHTML=`<div class="card"><h2>💾 Sicherung</h2><p class="hinweis" style="margin-bottom:12px">Deine Daten sind nur in diesem Browser gespeichert. Sichere sie ab und zu als Datei – so kannst du sie auch auf ein anderes Gerät holen.</p>
+ <div class="reihe"><button class="btn" data-a="ex">⬇️ Sicherung herunterladen</button><button class="btn grau" data-a="cp">📋 Als Text kopieren</button>
+ <label class="btn grau" style="flex-direction:row;color:var(--txt)">⬆️ Sicherung laden<input type="file" accept=".json,application/json" hidden></label></div><div class="hinweis" data-a="info"></div></div>`;
+ const info=el.querySelector('[data-a=info]');
+ const js=()=>JSON.stringify({app,datum:new Date().toISOString(),daten:getData()});
+ el.querySelector('[data-a=ex]').onclick=()=>datei(app+"-"+heute()+".json",js(),"application/json",info);
+ el.querySelector('[data-a=cp]').onclick=()=>kopiere(js(),info);
+ el.querySelector('input[type=file]').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const d=JSON.parse(await f.text());if(d.app!==app)throw 0;await setData(d.daten);info.textContent="✅ Sicherung geladen."}catch(err){info.textContent="❌ Diese Datei passt nicht zu dieser App."}};
+}
+/* Farben aus CSS lesen */
+const farbeVar=n=>getComputedStyle(document.body).getPropertyValue(n).trim()||"#7f8b9c";
+/* Pille im Diagramm: dunkler Hintergrund, farbiger Rahmen, Mono-Schrift */
+function pille(g,text,x,y,farbe,ausr="center"){g.font="700 11px 'JetBrains Mono',monospace";const w=g.measureText(text).width+14,h=20;
+ let x0=ausr==="center"?x-w/2:ausr==="right"?x-w:x;x0=Math.max(2,Math.min(x0,g.canvas.clientWidth-w-2));
+ g.fillStyle=farbeVar("--bg");g.strokeStyle=farbe;g.lineWidth=1;g.beginPath();g.roundRect(x0,y-h/2,w,h,10);g.fill();g.stroke();
+ g.fillStyle=farbe;g.textBaseline="middle";g.fillText(text,x0+7,y+1);g.textBaseline="alphabetic"}
+/* Balkendiagramm im Terminal-Look */
+function balken(canvas,labels,werte,opt={}){const d=devicePixelRatio||1,W=canvas.clientWidth,H=opt.h||230;canvas.width=W*d;canvas.height=H*d;canvas.style.height=H+"px";const g=canvas.getContext("2d");g.scale(d,d);g.clearRect(0,0,W,H);
+ const acc=opt.farbe||farbeVar("--acc");
+ if(!werte.length||werte.every(v=>!v)){g.fillStyle=farbeVar("--mut");g.font="13px Inter,system-ui";g.fillText(opt.leer||"Noch keine Daten",10,30);return}
+ const mx=Math.max(...werte,0)*1.18||1,L=44,B=26,T=14,bw=(W-L-6)/werte.length;
+ g.font="600 10px 'JetBrains Mono',monospace";g.strokeStyle=farbeVar("--line");g.setLineDash([3,4]);
+ for(let i=0;i<=3;i++){const v=mx*i/3,y=T+(H-T-B)*(1-i/3);g.beginPath();g.moveTo(L,y);g.lineTo(W,y);g.stroke();g.fillStyle=farbeVar("--mut");g.fillText(zahl(v,v<10&&mx<10?1:0),2,y+4)}
+ g.setLineDash([]);
+ const imax=werte.indexOf(Math.max(...werte));
+ werte.forEach((v,i)=>{const h=(H-T-B)*(v/mx),x=L+i*bw+bw*.18,w=bw*.64,y=H-B-h;
+  const gr=g.createLinearGradient(0,y,0,H-B);gr.addColorStop(0,acc);gr.addColorStop(1,acc+"33");
+  g.save();if(i===imax){g.shadowColor=acc;g.shadowBlur=14}g.fillStyle=gr;g.beginPath();g.roundRect(x,y,w,h,[4,4,0,0]);g.fill();g.restore();
+  g.fillStyle=farbeVar("--mut");g.font="600 10px 'JetBrains Mono',monospace";if(werte.length<=14||i%2===0)g.fillText(labels[i],L+i*bw+bw*.5-g.measureText(labels[i]).width/2,H-8)});
+ if(werte[imax])pille(g,(opt.fmt||zahl)(werte[imax]),L+imax*bw+bw/2,T+(H-T-B)*(1-werte[imax]/mx)-14,acc);
+}
+/* Kopfzeile: kleine graue Zeile */
+function setMeta(t){const m=document.getElementById("meta");if(m)m.textContent=t}
+
+const BILD=/\.(jpe?g|png|gif|webp|heic|heif|bmp)$/i, VIDEO=/\.(mp4|mov|m4v|webm|avi|mkv|3gp|mts|mpg|mpeg|wmv)$/i, ZEIGBAR_V=/\.(mp4|mov|m4v|webm)$/i;
+const MON=["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"];
+let ALLE=[],LISTE=[],META={tags:{},fav:{},personen:["Papa","Mama","Alea","David","Elijah","Isajah"]},jahr="",zeigeBis=300,lbI=-1;
+async function metaSpeichern(){await DB.set("meta",META)}
+const key=f=>f.pfad+"|"+f.size;
+
+/* ---------- Datum herausfinden ---------- */
+async function exifDatum(file){try{const buf=await file.slice(0,131072).arrayBuffer(),v=new DataView(buf);if(v.getUint16(0)!==0xFFD8)return null;let o=2;
+ while(o<v.byteLength-4){const m=v.getUint16(o);if(m===0xFFE1){const st=o+10;if(v.getUint32(o+4)!==0x45786966)return null;const le=v.getUint16(st)===0x4949;
+  const g16=p=>v.getUint16(p,le),g32=p=>v.getUint32(p,le);
+  const lies=(ifd)=>{const n=g16(ifd);let res={};for(let i=0;i<n;i++){const e=ifd+2+i*12,tag=g16(e);if(tag===0x8769)res.exif=g32(e+8);if(tag===0x9003||tag===0x0132){const off=st+g32(e+8);let s="";for(let k=0;k<19;k++)s+=String.fromCharCode(v.getUint8(off+k));res[tag]=s}}return res};
+  const i0=lies(st+g32(st+4));let d=null;if(i0.exif){const ie=lies(st+i0.exif);d=ie[0x9003]}d=d||i0[0x0132];
+  if(d&&/^\d{4}:\d\d:\d\d/.test(d)&&!d.startsWith("0000"))return d.slice(0,10).replace(/:/g,"-");return null}
+  if((m&0xFF00)!==0xFF00)return null;o+=2+v.getUint16(o+2)}}catch(e){}return null}
+function namensDatum(n){const m=n.match(/(19[89]\d|20[0-4]\d)[-_.]?(0[1-9]|1[0-2])[-_.]?(0[1-9]|[12]\d|3[01])/);return m?`${m[1]}-${m[2]}-${m[3]}`:null}
+
+/* ---------- Ordner laden ---------- */
+async function dateienAusHandle(h,pfad="",out=[]){for await(const [n,e] of h.entries()){if(n.startsWith("."))continue;
+ if(e.kind==="directory"){if(/^(\$recycle|system volume|@eadir|#recycle)/i.test(n))continue;await dateienAusHandle(e,pfad+n+"/",out);$("#ladeText").textContent=`Suche … ${out.length} Dateien gefunden`}
+ else if(BILD.test(n)||VIDEO.test(n))out.push({handle:e,pfad:pfad+n,name:n})}return out}
+async function verarbeiten(roh){$("#ladeInfo").hidden=false;ALLE=[];let i=0;const N=roh.length;
+ for(const r of roh){const file=r.file||await r.handle.getFile();const video=VIDEO.test(r.name);
+  let d=video?null:await exifDatum(file),quelle="Kamera";if(!d){d=namensDatum(r.name)||namensDatum(r.pfad);quelle="Dateiname"}
+  if(!d){d=new Date(file.lastModified).toISOString().slice(0,10);quelle="Dateidatum"}
+  ALLE.push({file,pfad:r.pfad,name:r.name,size:file.size,datum:d,quelle,video,ordner:r.pfad.split("/").slice(0,-1).join("/")||"(Hauptordner)"});
+  if(++i%40===0||i===N){$("#ladeBalken").style.width=(i/N*100)+"%";$("#ladeText").textContent=`${i} von ${N} Dateien sortiert …`;await new Promise(r=>setTimeout(r))}}
+ ALLE.sort((a,b)=>b.datum.localeCompare(a.datum)||a.name.localeCompare(b.name));$("#ladeInfo").hidden=true;archiv()}
+$("#ordnerBtn").onclick=async()=>{if(window.showDirectoryPicker){try{const h=await showDirectoryPicker({id:"fotos"});try{await DB.set("handle",h)}catch(e){}$("#ladeInfo").hidden=false;verarbeiten(await dateienAusHandle(h))}catch(e){}}else $("#ordnerInput").click()};
+$("#ordnerInput").onchange=e=>{const f=[...e.target.files].filter(f=>BILD.test(f.name)||VIDEO.test(f.name)).map(f=>({file:f,pfad:f.webkitRelativePath||f.name,name:f.name}));verarbeiten(f)};
+$("#wiederBtn").onclick=async()=>{try{const h=await DB.get("handle");if((await h.requestPermission({mode:"read"}))!=="granted")return;$("#ladeInfo").hidden=false;verarbeiten(await dateienAusHandle(h))}catch(e){$("#ordnerBtn").click()}};
+$("#andererOrdner").onclick=()=>{$$("section").forEach(s=>s.hidden=s.id!=="v-start")};
+
+/* ---------- Vorschaubilder ---------- */
+const urls=new Map();function url(f){if(!urls.has(f))urls.set(f,URL.createObjectURL(f.file));return urls.get(f)}
+const thumbCache=new Map();
+async function thumb(f,img){if(thumbCache.has(f)){img.src=thumbCache.get(f);return}
+ try{const bmp=await createImageBitmap(f.file,{resizeWidth:280,resizeQuality:"medium"});const c=document.createElement("canvas");const s=280/bmp.width;c.width=280;c.height=bmp.height*s;c.getContext("2d").drawImage(bmp,0,0,c.width,c.height);
+  const u=c.toDataURL("image/jpeg",.7);thumbCache.set(f,u);img.src=u}catch(e){img.src=url(f)}}
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;const el=e.target;io.unobserve(el);const f=LISTE[+el.dataset.i]||ALLE[+el.dataset.a];if(!f)return;
+ if(f.video){if(ZEIGBAR_V.test(f.name)){const v=document.createElement("video");v.muted=true;v.preload="metadata";v.src=url(f)+"#t=1";el.prepend(v)}else el.insertAdjacentHTML("afterbegin",'<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:2.5rem">🎞️</div>')}
+ else{const img=document.createElement("img");img.alt="";el.prepend(img);thumb(f,img)}}),{rootMargin:"400px"});
+function kachel(f,attr){return `<div class="bild" ${attr}>${f.video?'<span class="vid">▶ Video</span>':""}${META.fav[key(f)]?'<span class="fav">⭐</span>':""}</div>`}
+
+/* ---------- Archiv-Ansicht ---------- */
+function filtern(){const art=$("#fArt").value,p=$("#fPerson").value,o=$("#fOrdner").value,fav=$("#fFav").checked,q=$("#fSuche").value.trim().toLowerCase();
+ return ALLE.filter(f=>(art==="alle"||(art==="video")===f.video)&&(!p||(META.tags[key(f)]||[]).includes(p))&&(!o||f.ordner===o)&&(!fav||META.fav[key(f)])&&(!q||f.pfad.toLowerCase().includes(q)))}
+function archiv(){meta();$$("section").forEach(s=>s.hidden=s.id!=="v-archiv");
+ const v=ALLE.filter(f=>f.video).length,j=new Set(ALLE.map(f=>f.datum.slice(0,4)));const gb=ALLE.reduce((s,f)=>s+f.size,0)/1e9;
+ const kpi=(l,w)=>`<div class="kpi"><div class="l">${l}</div><div class="w">${w}</div></div>`;
+ $("#kpis").innerHTML=kpi("Fotos",zahl(ALLE.length-v))+kpi("Videos",zahl(v))+kpi("Jahre",j.size?[...j].sort()[0]+"–"+[...j].sort().pop():"–")+kpi("Größe",zahl(gb,1)+" GB");
+ $("#fOrdner").innerHTML=`<option value="">Alle Ordner</option>`+[...new Set(ALLE.map(f=>f.ordner))].sort().map(o=>`<option>${esc(o)}</option>`).join("");
+ personen();erinnerung();zeichnen()}
+function erinnerung(){const md=heute().slice(5),J=new Date().getFullYear();const E=ALLE.map((f,i)=>({f,i})).filter(x=>x.f.datum.slice(5)===md&&+x.f.datum.slice(0,4)<J&&x.f.quelle!=="Dateidatum");
+ $("#erinnerungBox").hidden=!E.length;$("#erinnerung").innerHTML=E.slice(0,30).map(x=>`<div style="text-align:center">${kachel(x.f,`data-a="${x.i}"`)}<div class="mini">vor ${J-x.f.datum.slice(0,4)} J.</div></div>`).join("");
+ $$("#erinnerung .bild").forEach(el=>io.observe(el))}
+function zeichnen(){LISTE=filtern();const js=[...new Set(LISTE.map(f=>f.datum.slice(0,4)))];if(jahr&&!js.includes(jahr))jahr="";
+ $("#jahre").innerHTML=`<button class="${jahr?"":"an"}" data-j="">Alle (${zahl(LISTE.length)})</button>`+js.map(y=>`<button class="${y===jahr?"an":""}" data-j="${y}">${y} (${LISTE.filter(f=>f.datum.startsWith(y)).length})</button>`).join("");
+ if(jahr)LISTE=LISTE.filter(f=>f.datum.startsWith(jahr));
+ let h="",lm="";LISTE.slice(0,zeigeBis).forEach((f,i)=>{const m=f.datum.slice(0,7);if(m!==lm){if(lm)h+="</div></div>";h+=`<div class="monat"><h3>${MON[+m.slice(5)-1]} ${m.slice(0,4)}</h3><div class="raster">`;lm=m}h+=kachel(f,`data-i="${i}"`)});
+ if(lm)h+="</div></div>";$("#inhalt").innerHTML=h||'<div class="leer">Keine Bilder gefunden.</div>';
+ $$("#inhalt .bild").forEach(el=>io.observe(el));$("#mehr").hidden=LISTE.length<=zeigeBis}
+$("#jahre").onclick=e=>{const b=e.target.closest("[data-j]");if(!b)return;jahr=b.dataset.j;zeigeBis=300;zeichnen()};
+["fArt","fPerson","fOrdner","fFav"].forEach(id=>$("#"+id).onchange=()=>{zeigeBis=300;zeichnen()});
+$("#fSuche").oninput=()=>{clearTimeout(window._t);window._t=setTimeout(()=>{zeigeBis=300;zeichnen()},300)};
+$("#mehr").onclick=()=>{zeigeBis+=300;zeichnen()};
+$("#inhalt").onclick=e=>{const b=e.target.closest("[data-i]");if(b)oeffne(+b.dataset.i)};
+$("#erinnerung").onclick=e=>{const b=e.target.closest("[data-a]");if(!b)return;LISTE=[ALLE[+b.dataset.a]];oeffne(0)};
+
+/* ---------- Doppelte ---------- */
+$("#dupBtn").onclick=()=>{const m={};ALLE.forEach(f=>{const k=f.name.toLowerCase()+"|"+f.size;(m[k]=m[k]||[]).push(f)});
+ const D2=Object.values(m).filter(a=>a.length>1);const sp=D2.reduce((s,a)=>s+a[0].size*(a.length-1),0)/1e9;
+ LISTE=D2.flat();$("#jahre").innerHTML=`<button class="an">🧬 ${D2.length} doppelte Dateien · ca. ${zahl(sp,1)} GB doppelt belegt</button><button data-j="">✖ Zurück</button>`;
+ $("#inhalt").innerHTML=D2.length?D2.slice(0,200).map(a=>`<div class="card" style="padding:10px"><div class="raster" style="grid-template-columns:repeat(auto-fill,minmax(100px,140px))">${a.map(f=>kachel(f,`data-i="${LISTE.indexOf(f)}"`)).join("")}</div><div class="mini" style="margin-top:6px">${a.map(f=>esc(f.pfad)).join("<br>")}</div></div>`).join(""):'<div class="leer">Keine doppelten Dateien gefunden 👍</div>';
+ $$("#inhalt .bild").forEach(el=>io.observe(el));$("#mehr").hidden=true};
+
+/* ---------- Großansicht ---------- */
+function oeffne(i){lbI=i;$("#lb").style.display="flex";lbZeigen()}
+function lbZeigen(){const f=LISTE[lbI];if(!f)return;const k=key(f);
+ $("#lbMedia").innerHTML=f.video?(ZEIGBAR_V.test(f.name)?`<video src="${url(f)}" controls autoplay playsinline></video>`:`<div style="color:#fff;text-align:center;padding:20px">🎞️ Dieses Videoformat (${esc(f.name.split(".").pop())}) kann der Browser nicht abspielen.<br><span class="mini">${esc(f.pfad)}</span></div>`):`<img src="${url(f)}" alt="">`;
+ $("#lbInfo").innerHTML=`${new Date(f.datum+"T12:00").toLocaleDateString("de-DE",{weekday:"short",day:"numeric",month:"long",year:"numeric"})} · ${lbI+1}/${LISTE.length}<br><span style="opacity:.6">${esc(f.pfad)} · Datum aus ${f.quelle}</span>`;
+ $("#lbFav").textContent=META.fav[k]?"⭐":"☆";
+ const T=META.tags[k]||[];$("#lbPersonen").innerHTML=META.personen.map(p=>`<button class="chip ${T.includes(p)?"an":""}" data-p="${esc(p)}">${esc(p)}</button>`).join("");
+ $("#lbL").style.visibility=lbI>0?"":"hidden";$("#lbR").style.visibility=lbI<LISTE.length-1?"":"hidden"}
+function lbZu(){$("#lb").style.display="none";$("#lbMedia").innerHTML="";zeichnenLeise()}
+function zeichnenLeise(){if(!$("#v-archiv").hidden&&!$("#jahre .an")?.textContent.startsWith("🧬"))zeichnen()}
+$("#lbZu").onclick=lbZu;$("#lbL").onclick=()=>{if(lbI>0){lbI--;lbZeigen()}};$("#lbR").onclick=()=>{if(lbI<LISTE.length-1){lbI++;lbZeigen()}};
+addEventListener("keydown",e=>{if($("#lb").style.display!=="flex")return;if(e.key==="ArrowLeft")$("#lbL").click();if(e.key==="ArrowRight")$("#lbR").click();if(e.key==="Escape")lbZu()});
+let tx=null;$("#lbMedia").addEventListener("touchstart",e=>tx=e.touches[0].clientX,{passive:true});$("#lbMedia").addEventListener("touchend",e=>{if(tx==null)return;const d=e.changedTouches[0].clientX-tx;if(Math.abs(d)>60)(d>0?$("#lbL"):$("#lbR")).click();tx=null});
+$("#lbFav").onclick=async()=>{const k=key(LISTE[lbI]);if(META.fav[k])delete META.fav[k];else META.fav[k]=1;await metaSpeichern();lbZeigen()};
+$("#lbPersonen").onclick=async e=>{const b=e.target.closest("[data-p]");if(!b)return;const k=key(LISTE[lbI]),p=b.dataset.p;const T=META.tags[k]||[];
+ META.tags[k]=T.includes(p)?T.filter(x=>x!==p):[...T,p];if(!META.tags[k].length)delete META.tags[k];await metaSpeichern();lbZeigen()};
+
+/* ---------- Personen ---------- */
+function personen(){$("#fPerson").innerHTML=`<option value="">Alle Personen</option>`+META.personen.map(p=>{const n=Object.values(META.tags).filter(t=>t.includes(p)).length;return `<option value="${esc(p)}">${esc(p)} (${n})</option>`}).join("");
+ $("#personenListe").innerHTML=META.personen.map(p=>`<span class="tag" style="padding:6px 10px">${esc(p)} <button class="btn grau" style="padding:0 6px;font-size:.75rem" data-pdel="${esc(p)}">✖</button></span>`).join("")}
+$("#personPlus").onclick=async()=>{const n=$("#neuPerson").value.trim();if(!n||META.personen.includes(n))return;META.personen.push(n);$("#neuPerson").value="";await metaSpeichern();personen()};
+$("#personenListe").onclick=async e=>{const b=e.target.closest("[data-pdel]");if(!b||!zweimal(b,"?"))return;META.personen=META.personen.filter(p=>p!==b.dataset.pdel);await metaSpeichern();personen()};
+
+(async()=>{await DB.open("fotoarchiv");META=(await DB.get("meta"))||META;
+ sicherung($("#sich"),"fotoarchiv",()=>META,async d=>{META=d;await metaSpeichern();if(ALLE.length)archiv()});
+ meta();try{const h=await DB.get("handle");if(h&&h.requestPermission)$("#wiederBtn").hidden=false}catch(e){}})();
+function meta(){const v=ALLE.filter(f=>f.video).length;setMeta(ALLE.length?`${zahl(ALLE.length-v)} FOTOS · ${zahl(v)} VIDEOS`:"ORDNER WÄHLEN")}
+
+/* Hell/Dunkel-Umschalter */
+(function(){const b=document.getElementById("themaBtn");if(!b)return;const set=t=>{document.documentElement.dataset.thema=t;b.textContent=t==="hell"?"🌙":"☀️";b.title=t==="hell"?"Dunkel":"Hell";
+ const m=document.querySelector('meta[name=theme-color]');if(m)m.content=t==="hell"?"#f3f5f8":"#05080d";try{localStorage.setItem("kompass_thema",t)}catch(e){}if(window._tb)dispatchEvent(new Event("resize"))};
+ set(document.documentElement.dataset.thema||"dunkel");window._tb=1;b.onclick=()=>set(document.documentElement.dataset.thema==="hell"?"dunkel":"hell")})();
+</script>
+</body>
+</html>
