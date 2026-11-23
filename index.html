@@ -137,6 +137,19 @@ header.kopf{position:relative}
 #lbOben,#lbUnten{display:flex;gap:8px;align-items:center;padding:10px;flex-wrap:wrap;background:var(--bg)cc}
 #lbOben{justify-content:space-between}
 .lbBtn{background:#ffffff22;border:none;color:#fff;padding:10px 14px;border-radius:10px;cursor:pointer;font-size:1rem}
+.monate button{font-size:.68rem}
+.mlink{background:none;border:none;color:var(--mut);font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;padding:6px 0}
+.mkopf{display:flex;align-items:center;gap:10px;width:100%;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 14px;margin:14px 0 10px;cursor:pointer;color:inherit;font:inherit;text-align:left}
+.mkopf .mt{font-family:var(--mono);font-weight:700;font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;color:var(--acc)}
+.mkopf .mz{margin-left:auto;font-family:var(--mono);font-size:.7rem;color:var(--mut)}
+.mkopf .mpf{color:var(--mut);transition:transform .2s;display:inline-block}
+.monat.zu .mpf{transform:rotate(-90deg)}.monat.zu .mkopf{margin-bottom:0}
+.mwahl{font-family:var(--mono);font-size:.68rem;color:var(--txt);border:1px solid var(--line);border-radius:999px;padding:3px 9px}
+.bild .haken{display:none;position:absolute;top:6px;right:6px;width:26px;height:26px;border-radius:50%;background:var(--acc);color:#05080d;font-weight:800;align-items:center;justify-content:center;z-index:2}
+.bild.gewaehlt{outline:3px solid var(--acc);outline-offset:-3px}.bild.gewaehlt .haken{display:flex}.bild.gewaehlt img{opacity:.75}
+#wahlBtn.an{border-color:var(--acc);color:var(--acc)}
+#auswahl{position:fixed;left:0;right:0;bottom:0;z-index:40;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:color-mix(in srgb,var(--card) 96%,transparent);border-top:1px solid var(--line);backdrop-filter:blur(8px);font-family:var(--mono);font-size:.8rem}
+#auswahl[hidden]{display:none}
 .frage-bg{position:fixed;inset:0;background:#000b;display:flex;align-items:center;justify-content:center;padding:16px;z-index:60}
 .frage-bg[hidden]{display:none}
 #lbMedia .zoom{width:100%;height:100%;display:flex;align-items:center;justify-content:center;touch-action:none}
@@ -179,8 +192,11 @@ header.kopf{position:relative}
   <input id="fSuche" placeholder="🔍 Dateiname / Ordner" style="flex:1;min-width:150px">
   <button class="btn grau" id="andererOrdner">📂 Anderer Ordner</button>
   <button class="btn grau" id="dupBtn">🧬 Doppelte finden</button>
+  <button class="btn grau" id="wahlBtn">☑️ Auswählen</button>
  </div>
  <div class="jahre" id="jahre"></div>
+ <div class="jahre monate" id="monate"></div>
+ <div style="display:flex;justify-content:flex-end"><button class="mlink" id="monAlle" hidden>Alle Monate aufklappen</button></div>
  <div id="inhalt"></div>
  <div style="text-align:center;margin:20px"><button class="btn grau" id="mehr" hidden>Mehr laden</button></div>
  <div class="card" style="margin-top:20px"><h2>👪 Personen</h2><div class="reihe"><input id="neuPerson" placeholder="Name, z. B. Isajah"><button class="btn grau" id="personPlus">➕</button></div><div class="chips" id="personenListe" style="margin-top:10px"></div>
@@ -189,6 +205,7 @@ header.kopf{position:relative}
 </section>
 </div>
 
+<div id="auswahl" hidden><span id="auswahlText"></span><div class="reihe"><button class="btn" id="selTeilen">📤 Teilen</button><button class="btn rot" id="selDel">🗑️ Löschen</button></div></div>
 <div id="frage" class="frage-bg" hidden><div class="card" id="frageBox" style="max-width:440px;width:100%"></div></div>
 <div id="lb">
  <div id="lbOben"><span id="lbInfo" style="color:#fff;font-size:.9rem"></span><div class="reihe"><button class="lbBtn" id="lbZoom" title="Zoom zurücksetzen" hidden>⤢</button><button class="lbBtn" id="lbTeilen" title="Teilen (WhatsApp …)">📤</button><button class="lbBtn" id="lbDel" title="Löschen">🗑️</button><button class="lbBtn" id="lbFav">☆</button><button class="lbBtn" id="lbZu">✖</button></div></div>
@@ -262,7 +279,7 @@ async function metaSpeichern(){await DB.set("meta",META)}
 const key=f=>f.pfad+"|"+f.size;
 
 /* ---------- Datum herausfinden ---------- */
-async function exifDatum(file){try{const buf=await file.slice(0,131072).arrayBuffer(),v=new DataView(buf);if(v.getUint16(0)!==0xFFD8)return null;let o=2;
+async function exifDatum(file){try{const buf=await file.slice(0,65536).arrayBuffer(),v=new DataView(buf);if(v.getUint16(0)!==0xFFD8)return null;let o=2;
  while(o<v.byteLength-4){const m=v.getUint16(o);if(m===0xFFE1){const st=o+10;if(v.getUint32(o+4)!==0x45786966)return null;const le=v.getUint16(st)===0x4949;
   const g16=p=>v.getUint16(p,le),g32=p=>v.getUint32(p,le);
   const lies=(ifd)=>{const n=g16(ifd);let res={};for(let i=0;i<n;i++){const e=ifd+2+i*12,tag=g16(e);if(tag===0x8769)res.exif=g32(e+8);if(tag===0x9003||tag===0x0132){const off=st+g32(e+8);let s="";for(let k=0;k<19;k++)s+=String.fromCharCode(v.getUint8(off+k));res[tag]=s}}return res};
@@ -276,11 +293,12 @@ async function dateienAusHandle(h,pfad="",out=[]){for await(const [n,e] of h.ent
  if(e.kind==="directory"){if(/^(\$recycle|system volume|@eadir|#recycle)/i.test(n))continue;await dateienAusHandle(e,pfad+n+"/",out);$("#ladeText").textContent=`Suche … ${out.length} Dateien gefunden`}
  else out.push({handle:e,dir:h,pfad:pfad+n,name:n})}return out}
 async function verarbeiten(roh){$("#ladeInfo").hidden=false;ALLE=[];let i=0;const N=roh.length;
- for(const r of roh){const file=r.file||await r.handle.getFile();const typ=typVon(r.name),video=typ==="video";
+ const eins=async r=>{const file=r.file||await r.handle.getFile();const typ=typVon(r.name),video=typ==="video";
   let d=/\.jpe?g$/i.test(r.name)?await exifDatum(file):null,quelle="Kamera";if(!d){d=namensDatum(r.name)||namensDatum(r.pfad);quelle="Dateiname"}
   if(!d){d=new Date(file.lastModified).toISOString().slice(0,10);quelle="Dateidatum"}
-  ALLE.push({file,dir:r.dir||null,pfad:r.pfad,name:r.name,size:file.size,datum:d,quelle,typ,video,ordner:r.pfad.split("/").slice(0,-1).join("/")||"(Hauptordner)"});
-  if(++i%40===0||i===N){$("#ladeBalken").style.width=(i/N*100)+"%";$("#ladeText").textContent=`${i} von ${N} Dateien sortiert …`;await new Promise(r=>setTimeout(r))}}
+  ALLE.push({file,dir:r.dir||null,pfad:r.pfad,name:r.name,size:file.size,datum:d,quelle,typ,video,ordner:r.pfad.split("/").slice(0,-1).join("/")||"(Hauptordner)"})};
+ for(let s=0;s<N;s+=8){await Promise.all(roh.slice(s,s+8).map(r=>eins(r).catch(()=>{})));i=Math.min(N,s+8);
+  $("#ladeBalken").style.width=(i/N*100)+"%";$("#ladeText").textContent=`${zahl(i)} von ${zahl(N)} Dateien sortiert …`;if(s%80===0)await new Promise(r=>setTimeout(r))}
  ALLE.sort((a,b)=>b.datum.localeCompare(a.datum)||a.name.localeCompare(b.name));$("#ladeInfo").hidden=true;archiv()}
 $("#ordnerBtn").onclick=async()=>{if(window.showDirectoryPicker){try{const h=await showDirectoryPicker({id:"fotos"});try{await DB.set("handle",h)}catch(e){}$("#ladeInfo").hidden=false;verarbeiten(await dateienAusHandle(h))}catch(e){}}else $("#ordnerInput").click()};
 $("#ordnerInput").onchange=$("#dateienInput").onchange=e=>{const f=[...e.target.files].filter(f=>!f.name.startsWith(".")).map(f=>({file:f,pfad:f.webkitRelativePath||f.name,name:f.name}));verarbeiten(f)};
@@ -290,15 +308,44 @@ $("#andererOrdner").onclick=()=>{$$("section").forEach(s=>s.hidden=s.id!=="v-sta
 
 /* ---------- Vorschaubilder ---------- */
 const urls=new Map();function url(f){if(!urls.has(f))urls.set(f,URL.createObjectURL(f.file));return urls.get(f)}
-const thumbCache=new Map();
-async function thumb(f,img){if(thumbCache.has(f)){img.src=thumbCache.get(f);return}
- try{const bmp=await createImageBitmap(f.file,{resizeWidth:280,resizeQuality:"medium"});const c=document.createElement("canvas");const s=280/bmp.width;c.width=280;c.height=bmp.height*s;c.getContext("2d").drawImage(bmp,0,0,c.width,c.height);
-  const u=c.toDataURL("image/jpeg",.7);thumbCache.set(f,u);img.src=u}catch(e){img.src=url(f)}}
-const io=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;const el=e.target;io.unobserve(el);const f=LISTE[+el.dataset.i]||ALLE[+el.dataset.a];if(!f)return;
- if(f.typ==="dok"||f.typ==="audio"){el.insertAdjacentHTML("afterbegin",`<div class="dokk"><div style="font-size:2.4rem">${ICON(f.name)}</div><div class="dn">${esc(f.name)}</div><div class="mini">${groesse(f.size)}</div></div>`)}
- else if(f.video){if(ZEIGBAR_V.test(f.name)){const v=document.createElement("video");v.muted=true;v.preload="metadata";v.src=url(f)+"#t=1";el.prepend(v)}else el.insertAdjacentHTML("afterbegin",'<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:2.5rem">🎞️</div>')}
- else{const img=document.createElement("img");img.alt="";el.prepend(img);thumb(f,img)}}),{rootMargin:"400px"});
-function kachel(f,attr){return `<div class="bild" ${attr}>${f.video?'<span class="vid">▶ Video</span>':""}${META.fav[key(f)]?'<span class="fav">⭐</span>':""}</div>`}
+/* Vorschaubilder werden gespeichert – beim nächsten Öffnen sind sie sofort da */
+const TDB={db:null,async open(){return new Promise(r=>{try{const q=indexedDB.open("fotoarchiv_vorschau",1);q.onupgradeneeded=()=>q.result.createObjectStore("t");q.onsuccess=()=>{this.db=q.result;r()};q.onerror=()=>r()}catch(e){r()}})},
+ get(k){return new Promise(r=>{if(!this.db)return r(null);try{const q=this.db.transaction("t").objectStore("t").get(k);q.onsuccess=()=>r(q.result||null);q.onerror=()=>r(null)}catch(e){r(null)}})},
+ set(k,v){if(!this.db)return;try{this.db.transaction("t","readwrite").objectStore("t").put(v,k)}catch(e){}}};
+/* Fertiges Mini-Bild aus der Kamera-Datei (EXIF) – viel schneller als das ganze Foto zu laden */
+async function exifVorschau(file){try{const buf=await file.slice(0,65536).arrayBuffer(),v=new DataView(buf);if(v.getUint16(0)!==0xFFD8)return null;let o=2;
+ while(o<v.byteLength-4){const m=v.getUint16(o);if(m===0xFFE1&&v.getUint32(o+4)===0x45786966){const st=o+10,le=v.getUint16(st)===0x4949,g16=p=>v.getUint16(p,le),g32=p=>v.getUint32(p,le);
+   const ifd0=st+g32(st+4),n0=g16(ifd0);let rot=1;for(let i=0;i<n0;i++){const e=ifd0+2+i*12;if(g16(e)===0x0112)rot=g16(e+8)}
+   const ifd1o=g32(ifd0+2+n0*12);if(!ifd1o)return null;const ifd1=st+ifd1o,n1=g16(ifd1);let off=0,len=0;
+   for(let i=0;i<n1;i++){const e=ifd1+2+i*12,t=g16(e);if(t===0x0201)off=g32(e+8);if(t===0x0202)len=g32(e+8)}
+   if(!off||!len||st+off+len>buf.byteLength||len<2000)return null;return{blob:new Blob([buf.slice(st+off,st+off+len)],{type:"image/jpeg"}),rot}}
+  if((m&0xFF00)!==0xFF00)return null;o+=2+v.getUint16(o+2)}}catch(e){}return null}
+function bildZuBlob(src,w0,h0){const w=360,h=Math.max(1,Math.round(w*h0/w0)),c=document.createElement("canvas");c.width=w;c.height=h;c.getContext("2d").drawImage(src,0,0,w,h);return new Promise(r=>c.toBlob(b=>r(b),"image/jpeg",.72))}
+function videoVorschau(f){return new Promise(res=>{const v=document.createElement("video");v.muted=true;v.preload="auto";v.playsInline=true;let fertig=false;
+ const ende=x=>{if(fertig)return;fertig=true;clearTimeout(t);v.removeAttribute("src");try{v.load()}catch(e){}res(x)},t=setTimeout(()=>ende(null),9000);
+ v.onloadeddata=()=>{try{v.currentTime=Math.min(1,(v.duration||2)/3)}catch(e){ende(null)}};
+ v.onseeked=async()=>{const b=await bildZuBlob(v,v.videoWidth||16,v.videoHeight||9);ende(b?{blob:b,rot:1}:null)};v.onerror=()=>ende(null);v.src=url(f)})}
+async function machVorschau(f){const k="v2|"+key(f);const c=await TDB.get(k);if(c)return c;let r=null;
+ if(f.typ==="foto"){if(/\.jpe?g$/i.test(f.name))r=await exifVorschau(f.file);
+  if(!r&&ZEIGBAR_B.test(f.name)){try{const bmp=await createImageBitmap(f.file,{resizeWidth:360,resizeQuality:"low"});const b=await bildZuBlob(bmp,bmp.width,bmp.height);bmp.close&&bmp.close();if(b)r={blob:b,rot:1}}catch(e){}}}
+ else if(f.typ==="video"&&ZEIGBAR_V.test(f.name))r=await videoVorschau(f);
+ if(r)TDB.set(k,r);return r}
+const vUrl=new Map();
+function zeigeVorschau(el,f,r){el.dataset.fertig="1";
+ if(r){if(!vUrl.has(f))vUrl.set(f,URL.createObjectURL(r.blob));const img=document.createElement("img");img.alt="";img.src=vUrl.get(f);if(r.rot===6)img.style.transform="rotate(90deg)";if(r.rot===8)img.style.transform="rotate(-90deg)";if(r.rot===3)img.style.transform="rotate(180deg)";el.prepend(img)}
+ else if(f.typ==="video")el.insertAdjacentHTML("afterbegin",'<div class="dokk"><div style="font-size:2.4rem">🎞️</div></div>');
+ else if(ZEIGBAR_B.test(f.name)){const img=document.createElement("img");img.alt="";img.loading="lazy";img.src=url(f);el.prepend(img)}
+ else el.insertAdjacentHTML("afterbegin",`<div class="dokk"><div style="font-size:2.4rem">🖼️</div><div class="dn">${esc(f.name)}</div></div>`)}
+/* Warteschlange: höchstens 3 gleichzeitig, nur was gerade sichtbar ist */
+const Q={warte:[],laeuft:0,max:3,
+ add(el){if(el.dataset.q||el.dataset.fertig)return;el.dataset.q="1";this.warte.unshift(el);this.weiter()},
+ weiter(){while(this.laeuft<this.max&&this.warte.length){const el=this.warte.shift();el.dataset.q="";if(!el.isConnected||el.dataset.fertig||el.dataset.sicht!=="1")continue;
+  const f=dateiVon(el);if(!f)continue;this.laeuft++;machVorschau(f).then(r=>zeigeVorschau(el,f,r)).catch(()=>zeigeVorschau(el,f,null)).finally(()=>{this.laeuft--;this.weiter()})}}};
+const dateiVon=el=>el.dataset.i!=null?LISTE[+el.dataset.i]:ALLE[+el.dataset.a];
+const io=new IntersectionObserver(es=>es.forEach(e=>{const el=e.target;el.dataset.sicht=e.isIntersecting?"1":"";if(!e.isIntersecting||el.dataset.fertig)return;const f=dateiVon(el);if(!f)return;
+ if(f.typ==="dok"||f.typ==="audio"){el.dataset.fertig="1";el.insertAdjacentHTML("afterbegin",`<div class="dokk"><div style="font-size:2.4rem">${ICON(f.name)}</div><div class="dn">${esc(f.name)}</div><div class="mini">${groesse(f.size)}</div></div>`);return}
+ Q.add(el)}),{rootMargin:"300px"});
+function kachel(f,attr){return `<div class="bild ${sel.has(f)?"gewaehlt":""}" ${attr}><span class="haken">✓</span>${f.video?'<span class="vid">▶ Video</span>':""}${META.fav[key(f)]?'<span class="fav">⭐</span>':""}</div>`}
 
 /* ---------- Archiv-Ansicht ---------- */
 function filtern(){const art=$("#fArt").value,p=$("#fPerson").value,o=$("#fOrdner").value,fav=$("#fFav").checked,q=$("#fSuche").value.trim().toLowerCase();
@@ -315,14 +362,37 @@ function erinnerung(){const md=heute().slice(5),J=new Date().getFullYear();const
 function zeichnen(){LISTE=filtern();const js=[...new Set(LISTE.map(f=>f.datum.slice(0,4)))];if(jahr&&!js.includes(jahr))jahr="";
  $("#jahre").innerHTML=`<button class="${jahr?"":"an"}" data-j="">Alle (${zahl(LISTE.length)})</button>`+js.map(y=>`<button class="${y===jahr?"an":""}" data-j="${y}">${y} (${LISTE.filter(f=>f.datum.startsWith(y)).length})</button>`).join("");
  if(jahr)LISTE=LISTE.filter(f=>f.datum.startsWith(jahr));
- let h="",lm="";LISTE.slice(0,zeigeBis).forEach((f,i)=>{const m=f.datum.slice(0,7);if(m!==lm){if(lm)h+="</div></div>";h+=`<div class="monat"><h3>${MON[+m.slice(5)-1]} ${m.slice(0,4)}</h3><div class="raster">`;lm=m}h+=kachel(f,`data-i="${i}"`)});
- if(lm)h+="</div></div>";$("#inhalt").innerHTML=h||'<div class="leer">Keine Bilder gefunden.</div>';
- $$("#inhalt .bild").forEach(el=>io.observe(el));$("#mehr").hidden=LISTE.length<=zeigeBis}
-$("#jahre").onclick=e=>{const b=e.target.closest("[data-j]");if(!b)return;jahr=b.dataset.j;zeigeBis=300;zeichnen()};
+ const G=[];LISTE.forEach((f,i)=>{const m=f.datum.slice(0,7);if(!G.length||G[G.length-1].m!==m)G.push({m,l:[]});G[G.length-1].l.push(i)});
+ if(!monAuf.size&&G.length&&!monAufGesetzt){monAuf.add(G[0].m);monAufGesetzt=true}
+ const mName=m=>MON[+m.slice(5)-1]+" "+m.slice(0,4),mKurz=m=>MON[+m.slice(5)-1].slice(0,3)+" "+m.slice(2,4);
+ $("#monate").innerHTML=G.length>1?G.map(g=>`<button class="${monAuf.has(g.m)?"an":""}" data-m="${g.m}">${mKurz(g.m)} (${zahl(g.l.length)})</button>`).join(""):"";
+ $("#monAlle").hidden=G.length<2;$("#monAlle").textContent=G.every(g=>monAuf.has(g.m))?"Alle Monate zuklappen":"Alle Monate aufklappen";
+ let h="";for(const g of G){const auf=monAuf.has(g.m),alleSel=g.l.every(i=>sel.has(LISTE[i]));
+  h+=`<div class="monat ${auf?"":"zu"}" id="m-${g.m}"><button class="mkopf" data-mk="${g.m}"><span class="mpf">▾</span><span class="mt">${mName(g.m)}</span><span class="mz">${zahl(g.l.length)}</span>${wahl?`<span class="mwahl" data-mw="${g.m}">${alleSel?"☑ Alle abwählen":"☐ Alle wählen"}</span>`:""}</button>`;
+  if(auf)h+=`<div class="raster">${g.l.map(i=>kachel(LISTE[i],`data-i="${i}"`)).join("")}</div>`;h+="</div>"}
+ $("#inhalt").innerHTML=h||'<div class="leer">Keine Bilder gefunden.</div>';
+ $$("#inhalt .bild").forEach(el=>io.observe(el));$("#mehr").hidden=true;auswahlLeiste()}
+let monAuf=new Set(),monAufGesetzt=false;
+$("#monate").onclick=e=>{const b=e.target.closest("[data-m]");if(!b)return;monAuf.add(b.dataset.m);zeichnen();document.getElementById("m-"+b.dataset.m)?.scrollIntoView({behavior:"smooth",block:"start"})};
+$("#monAlle").onclick=()=>{const G=[...new Set(LISTE.map(f=>f.datum.slice(0,7)))];if(G.every(m=>monAuf.has(m)))monAuf.clear();else G.forEach(m=>monAuf.add(m));monAufGesetzt=true;zeichnen()};
+$("#jahre").onclick=e=>{const b=e.target.closest("[data-j]");if(!b)return;jahr=b.dataset.j;monAuf.clear();monAufGesetzt=false;zeichnen()};
 ["fArt","fPerson","fOrdner","fFav"].forEach(id=>$("#"+id).onchange=()=>{zeigeBis=300;zeichnen()});
 $("#fSuche").oninput=()=>{clearTimeout(window._t);window._t=setTimeout(()=>{zeigeBis=300;zeichnen()},300)};
 $("#mehr").onclick=()=>{zeigeBis+=300;zeichnen()};
-$("#inhalt").onclick=e=>{const b=e.target.closest("[data-i]");if(b)oeffne(+b.dataset.i)};
+$("#inhalt").onclick=e=>{
+ const mw=e.target.closest("[data-mw]");if(mw){const m=mw.dataset.mw,L=LISTE.filter(f=>f.datum.startsWith(m)),alle=L.every(f=>sel.has(f));L.forEach(f=>alle?sel.delete(f):sel.add(f));zeichnen();return}
+ const mk=e.target.closest("[data-mk]");if(mk){const m=mk.dataset.mk;monAuf.has(m)?monAuf.delete(m):monAuf.add(m);monAufGesetzt=true;zeichnen();return}
+ const b=e.target.closest("[data-i]");if(!b)return;
+ if(wahl){const f=LISTE[+b.dataset.i];sel.has(f)?sel.delete(f):sel.add(f);b.classList.toggle("gewaehlt",sel.has(f));auswahlLeiste();return}
+ oeffne(+b.dataset.i)};
+/* ---------- Mehrere auswählen: teilen oder löschen ---------- */
+let wahl=false;const sel=new Set();
+$("#wahlBtn").onclick=()=>{wahl=!wahl;if(!wahl)sel.clear();$("#wahlBtn").classList.toggle("an",wahl);$("#wahlBtn").textContent=wahl?"✖ Auswahl beenden":"☑️ Auswählen";zeichnen()};
+function auswahlLeiste(){const L=$("#auswahl");L.hidden=!wahl;document.body.style.paddingBottom=wahl?"90px":"";if(!wahl)return;const n=sel.size,gb=[...sel].reduce((a,f)=>a+f.size,0);
+ $("#auswahlText").textContent=n?`${zahl(n)} ausgewählt · ${groesse(gb)}`:"Tippe Bilder an, um sie auszuwählen";$("#selTeilen").disabled=$("#selDel").disabled=!n}
+$("#selTeilen").onclick=async()=>{const files=[...sel].map(f=>f.file);try{if(navigator.canShare&&navigator.canShare({files})){await navigator.share({files});return}}catch(e){if(e.name==="AbortError")return}
+ frage(`<h2>📤 Teilen</h2><p style="margin:10px 0">Mehrere Dateien auf einmal teilen geht in diesem Browser nicht${files.length>10?" (oder es sind zu viele auf einmal – versuche höchstens 10)":""}.</p><button class="btn grau" data-x>Schließen</button>`)};
+$("#selDel").onclick=()=>loeschen([...sel],()=>{sel.clear();zeichnen()});
 $("#erinnerung").onclick=e=>{const b=e.target.closest("[data-a]");if(!b)return;LISTE=[ALLE[+b.dataset.a]];oeffne(0)};
 
 /* ---------- Doppelte ---------- */
@@ -387,18 +457,20 @@ $("#lbTeilen").onclick=async()=>{const f=LISTE[lbI];if(!f)return;
 function frage(html){$("#frageBox").innerHTML=html;$("#frage").hidden=false;try{history.pushState({k:"frage"},"")}catch(e){}}
 function frageZu(){if(history.state&&history.state.k==="frage")history.back();else $("#frage").hidden=true}
 $("#frage").onclick=e=>{if(e.target.id==="frage"||e.target.closest("[data-x]"))frageZu()};
-$("#lbDel").onclick=()=>{const f=LISTE[lbI];if(!f)return;const echt=!!(f.dir&&f.dir.removeEntry);
- frage(`<h2 style="color:var(--red)">🗑️ Wirklich löschen?</h2><p style="margin:10px 0"><b>${esc(f.name)}</b><br><span class="mini">${esc(f.pfad)} · ${groesse(f.size)}</span></p>
+$("#lbDel").onclick=()=>{const f=LISTE[lbI];if(!f)return;loeschen([f],()=>{LISTE=LISTE.filter(x=>x!==f);if(!LISTE.length){lbZu();return}if(lbI>=LISTE.length)lbI=LISTE.length-1;lbZeigen()})};
+function loeschen(L,danach){const echt=L.every(f=>f.dir&&f.dir.removeEntry),n=L.length,gb=L.reduce((a,f)=>a+f.size,0);
+ frage(`<h2 style="color:var(--red)">🗑️ ${n>1?zahl(n)+" Dateien":"Datei"} wirklich löschen?</h2><p style="margin:10px 0">${n===1?`<b>${esc(L[0].name)}</b><br><span class="mini">${esc(L[0].pfad)} · ${groesse(gb)}</span>`:`<b>${zahl(n)} Dateien</b> · ${groesse(gb)}<br><span class="mini">${L.slice(0,4).map(f=>esc(f.name)).join(", ")}${n>4?" …":""}</span>`}</p>
  <p class="hinweis" style="margin-bottom:14px">${echt?"Die Datei wird <b>endgültig von der Festplatte gelöscht</b>. Das kann nicht rückgängig gemacht werden.":"Am Handy darf der Browser keine Dateien löschen. Die Datei wird nur <b>aus dieser Ansicht entfernt</b> – auf dem Handy bleibt sie erhalten. Endgültig löschen geht am PC mit Chrome oder Edge."}</p>
  <label style="flex-direction:row;align-items:center;gap:8px;color:var(--txt);margin-bottom:14px;text-transform:none;letter-spacing:0;font-family:var(--sans);font-weight:500"><input type="checkbox" id="delOk"> Ja, ich bin sicher</label>
- <div class="reihe"><button class="btn rot" id="delJa" disabled>${echt?"Endgültig löschen":"Aus Ansicht entfernen"}</button><button class="btn grau" data-x>Abbrechen</button></div><div class="hinweis" id="delInfo"></div>`);
+ <div class="reihe"><button class="btn rot" id="delJa" disabled>${echt?"Endgültig löschen":"Aus Ansicht entfernen"}${n>1?" ("+zahl(n)+")":""}</button><button class="btn grau" data-x>Abbrechen</button></div><div class="hinweis" id="delInfo"></div>`);
  $("#delOk").onchange=e=>$("#delJa").disabled=!e.target.checked;
  $("#delJa").onclick=async()=>{try{
-  if(echt){const p=await f.dir.queryPermission({mode:"readwrite"});if(p!=="granted"&&(await f.dir.requestPermission({mode:"readwrite"}))!=="granted"){$("#delInfo").textContent="Ohne Erlaubnis kann nicht gelöscht werden.";return}await f.dir.removeEntry(f.name)}
-  ALLE=ALLE.filter(x=>x!==f);const k=key(f);delete META.tags[k];delete META.fav[k];await metaSpeichern();
-  LISTE=LISTE.filter(x=>x!==f);frageZu();meta();
-  if(!LISTE.length){lbZu();return}if(lbI>=LISTE.length)lbI=LISTE.length-1;lbZeigen()
- }catch(err){$("#delInfo").textContent="❌ Löschen hat nicht geklappt: "+err.message}}};
+  let fehler=0,i=0;$("#delJa").disabled=true;
+  for(const f of L){i++;$("#delInfo").textContent=`Lösche ${i} von ${n} …`;
+   try{if(echt){const p=await f.dir.queryPermission({mode:"readwrite"});if(p!=="granted"&&(await f.dir.requestPermission({mode:"readwrite"}))!=="granted"){$("#delInfo").textContent="Ohne Erlaubnis kann nicht gelöscht werden.";return}await f.dir.removeEntry(f.name)}
+    ALLE=ALLE.filter(x=>x!==f);const k=key(f);delete META.tags[k];delete META.fav[k]}catch(err){fehler++}}
+  await metaSpeichern();frageZu();meta();danach&&danach();if(fehler)setTimeout(()=>frage(`<h2>⚠️ Hinweis</h2><p style="margin:10px 0">${fehler} Datei(en) konnten nicht gelöscht werden.</p><button class="btn grau" data-x>OK</button>`),300)
+ }catch(err){$("#delInfo").textContent="❌ Löschen hat nicht geklappt: "+err.message}}}
 
 /* ---------- Schutz vor versehentlichem Zurück ---------- */
 let darfRaus=false;
@@ -419,7 +491,7 @@ function personen(){$("#fPerson").innerHTML=`<option value="">Alle Personen</opt
 $("#personPlus").onclick=async()=>{const n=$("#neuPerson").value.trim();if(!n||META.personen.includes(n))return;META.personen.push(n);$("#neuPerson").value="";await metaSpeichern();personen()};
 $("#personenListe").onclick=async e=>{const b=e.target.closest("[data-pdel]");if(!b||!zweimal(b,"?"))return;META.personen=META.personen.filter(p=>p!==b.dataset.pdel);await metaSpeichern();personen()};
 
-(async()=>{await DB.open("fotoarchiv");META=(await DB.get("meta"))||META;
+(async()=>{await DB.open("fotoarchiv");await TDB.open();META=(await DB.get("meta"))||META;
  sicherung($("#sich"),"fotoarchiv",()=>META,async d=>{META=d;await metaSpeichern();if(ALLE.length)archiv()});
  meta();try{const h=await DB.get("handle");if(h&&h.requestPermission)$("#wiederBtn").hidden=false}catch(e){}})();
 function meta(){const c=t=>ALLE.filter(f=>f.typ===t).length;const d=c("dok")+c("audio");setMeta(ALLE.length?`${zahl(c("foto"))} FOTOS · ${zahl(c("video"))} VIDEOS`+(d?` · ${zahl(d)} DATEIEN`:""):"ORDNER WÄHLEN")}
